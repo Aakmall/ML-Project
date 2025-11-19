@@ -122,8 +122,8 @@ def webhook():
         message_lower = message.lower().strip()
         sapaan = ["halo", "hai", "hallo", "pagi", "siang", "malam", "hey", "hei"]
 
-        # 🔹 Trigger mention @aigizi untuk group
-        trigger = "@aigizi"
+        # 🔹 Trigger mention @aiPregnaBot untuk group
+        trigger = "@aiPregnaBot"
         if trigger in message_lower:
             user_message = message_lower.replace(trigger, "").strip()
             ai_reply = get_ai_response(user_message)
