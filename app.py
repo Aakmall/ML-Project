@@ -1,6 +1,6 @@
-# ============================================================
-# 🤖 WhatsApp AI Gizi Anak – Flask Webhook Server (Group & Personal, Markdown Rapi)
-# ============================================================
+# ========================
+# 🤖 WhatsApp PregnaBot –
+# ========================
 from flask import Flask, request, jsonify
 import requests
 import google.generativeai as genai
@@ -132,8 +132,8 @@ def webhook():
 
         elif any(word in message_lower for word in sapaan):
             ai_reply = (
-                "👋 Hai! Saya AI-Gizi-Anak, asisten edukasi kesehatan.\n\n"
-                "Saya siap bantu kamu memahami seputar gizi anak, stunting, dan nutrisi seimbang.\n"
+                "👋 Hai! Saya PregnaBot, asisten ibu hamil.\n\n"
+                "Saya siap bantu kamu memahami seputar program kehamilan dan perkembangan janin.\n"
                 "Silakan tanya apa yang ingin kamu ketahui 😊"
             )
             target = group_id if is_group else sender
@@ -155,5 +155,5 @@ def webhook():
 # ------------------------------------------------------------
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
-    logging.info(f"🚀 WhatsApp AI-Gizi-Anak aktif di port {port}")
+    logging.info(f"WhatsApp PregnaBot aktif di port {port}")
     app.run(host="0.0.0.0", port=port)

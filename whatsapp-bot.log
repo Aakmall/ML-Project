@@ -1,0 +1,11 @@
+2025-11-19 13:56:07,010 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://192.168.100.5:8000
+2025-11-19 13:56:07,011 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-19 13:57:58,345 - INFO - WhatsApp PregnaBot aktif di port 8000
+2025-11-19 13:57:58,352 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://192.168.100.5:8000
+2025-11-19 13:57:58,355 - INFO - [33mPress CTRL+C to quit[0m
