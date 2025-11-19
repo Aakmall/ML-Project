@@ -117,7 +117,7 @@ pipeline {
               STATUS_MSG="Webhook tidak merespons ❌ (HTTP $RESPONSE)"
             fi
 
-            MSG="🤖 *Bot WhatsApp Gizi Anak Aktif!*%0AStatus: ${STATUS_MSG}%0AURL: ${WEBHOOK_URL}%0AHost: $(hostname)"
+            MSG=" *WhatsApp PregnaBot Aktif !*%0AStatus: ${STATUS_MSG}%0AURL: ${WEBHOOK_URL}%0AHost: $(hostname)"
             curl -sS -X POST "$FONNTE_SEND_URL" \
               -H "Authorization: ${FONNTE_TOKEN}" \
               --data-urlencode "target=${FONNTE_TEST_TARGET}" \
