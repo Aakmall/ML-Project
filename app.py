@@ -62,6 +62,7 @@ Contoh Pertanyaan:
 - "Berapa ukuran bayi di minggu ke-20?"
 - "Apa saja gejala umum di trimester pertama?"
 - "Bagaimana cara menjaga kesehatan selama kehamilan?"
+- "Apa saja perubahan tubuh yang terjadi pada ibu hamil di minggu ke-30?"
 
 Pesan pengguna:
 "{user_message}"
