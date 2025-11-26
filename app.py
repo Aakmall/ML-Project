@@ -157,7 +157,7 @@ def webhook():
         elif message_lower in ["!menu", "!help", "menu", "help", "bantuan"]:
             ai_reply = (
                 "🌸 **Menu PregnaBot** 🌸\n\n"
-                "🤰 **Tanya Jawab**: Ketik pertanyaan apa saja seputar kehamilan.\n"
+                "🤰 **Tanya Jawab**: Ketik pertanyaan apa saja seputar kehamilan ya.\n"
                 "📅 **Cek HPL**: Ketik `!hpl DD-MM-YYYY` (contoh: `!hpl 01-01-2024`)\n"
                 "✨ **Tips**: Tanyakan 'Tips minggu ini' untuk info sesuai usia kehamilan.\n\n"
                 "Semoga sehat selalu Bunda! 💖"
