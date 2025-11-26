@@ -9,3 +9,16 @@
  * Running on http://127.0.0.1:8000
  * Running on http://192.168.100.5:8000
 2025-11-19 13:57:58,355 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-26 10:52:42,187 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://192.168.100.5:8000
+2025-11-26 10:52:42,187 - INFO - [33mPress CTRL+C to quit[0m
+2025-11-26 10:53:13,990 - INFO - 127.0.0.1 - - [26/Nov/2025 10:53:13] "[33mGET / HTTP/1.1[0m" 404 -
+2025-11-26 10:53:14,055 - INFO - 127.0.0.1 - - [26/Nov/2025 10:53:14] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-11-26 10:59:35,771 - INFO - 127.0.0.1 - - [26/Nov/2025 10:59:35] "[33mGET / HTTP/1.1[0m" 404 -
+2025-11-26 11:15:40,146 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8000
+ * Running on http://192.168.100.5:8000
+2025-11-26 11:15:40,146 - INFO - [33mPress CTRL+C to quit[0m

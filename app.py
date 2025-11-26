@@ -1,18 +1,14 @@
-# ========================
 # 🤖 WhatsApp PregnaBot –
-# ========================
 from flask import Flask, request, jsonify
 import requests
 import google.generativeai as genai
 import logging
 import os
-import re
+from datetime import datetime, timedelta
 
-# ------------------------------------------------------------
-# 🔧 KONFIGURASI DASAR
-# ------------------------------------------------------------
 app = Flask(__name__)
 
+# Konfigurasi Logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -22,69 +18,93 @@ logging.basicConfig(
     ]
 )
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDdYeOAOohUwcSrb1gLLHpfb7sBfmrETVM")
-FONNTE_TOKEN = os.getenv("FONNTE_TOKEN", "uqMuVhM4YKzujVg38BiB")
+# Konfigurasi API Key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyBTby5ifvkFIJgCuegEcUbzkXrpAFh0654")
+FONNTE_TOKEN = os.getenv("FONNTE_TOKEN", "xFq3eM7QRWXfnhzJrXLg")
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-2.5-flash")
 
-# ------------------------------------------------------------
-# 🧠 FUNGSI RESPON AI
-# ------------------------------------------------------------
+
+def calculate_hpl(hpht_str: str) -> str:
+    """
+    Menghitung Hari Perkiraan Lahir (HPL) berdasarkan HPHT (Hari Pertama Haid Terakhir).
+    Rumus Naegele:
+    - Hari + 7
+    - Bulan - 3 (atau +9)
+    - Tahun + 1 (jika bulan > 3)
+    """
+    try:
+        # Format tanggal input: DD-MM-YYYY
+        hpht = datetime.strptime(hpht_str, "%d-%m-%Y")
+        
+        # Hitung HPL
+        # Cara simpel: HPHT + 280 hari (40 minggu)
+        hpl = hpht + timedelta(days=280)
+        
+        # Hitung usia kehamilan saat ini
+        today = datetime.now()
+        age_days = (today - hpht).days
+        age_weeks = age_days // 7
+        age_remainder_days = age_days % 7
+        
+        return (
+            f"📅 *Kalkulator Kehamilan*\n"
+            f"HPHT: {hpht.strftime('%d-%m-%Y')}\n"
+            f"HPL (Perkiraan Lahir): {hpl.strftime('%d-%m-%Y')}\n"
+            f"Usia Kehamilan: {age_weeks} minggu {age_remainder_days} hari\n\n"
+            f"Semoga ibu dan janin sehat selalu! 💖"
+        )
+    except ValueError:
+        return "⚠️ Format tanggal salah. Gunakan format DD-MM-YYYY. Contoh: !hpl 01-01-2024"
+
+
 def get_ai_response(user_message: str) -> str:
     """
-    Menghasilkan jawaban AI seputar program kehamilan dan perkembangan janin
-    maksimal 200 kata, markdown rapi untuk WhatsApp tanpa **
+    Menghasilkan jawaban AI dengan persona PregnaBot.
     """
     try:
         prompt = f"""
-Anda adalah AI-Pendamping-Ibu-Hamil, asisten edukasi bagi ibu hamil.
+Anda adalah **PregnaBot**, asisten pribadi virtual yang ramah, hangat, dan empatik khusus untuk ibu hamil.
+Nama kamu adalah PregnaBot.
 
-Fokus Utama:
-- Perkembangan janin per minggu
-- Ukuran dan berat bayi
-- Pembentukan organ
-- Gejala umum yang dirasakan ibu
-- Tips kesehatan, nutrisi, dan perawatan diri selama hamil
-- Informasi perubahan tubuh ibu per minggu kehamilan
+Tugas Utama:
+1. Menjawab pertanyaan seputar kehamilan, perkembangan janin, nutrisi, dan kesehatan ibu hamil.
+2. Memberikan dukungan emosional yang menenangkan.
+3. Jawaban harus **RINGKAS**, **PADAT**, dan **JELAS**. Maksimal 150 kata.
+4. Gunakan emoji yang relevan (👶, 🤰, 💖, ✨) agar pesan terasa personal.
 
-Aturan:
-- Jawab maksimal 200 kata.
-- Gunakan format rapi agar mudah dibaca di WhatsApp.
-- Jika pertanyaan di luar topik kehamilan, jawab:
-  "Maaf, saya hanya bisa membantu seputar informasi kehamilan dan perkembangan janin."
-- Gaya bahasa: ramah, sopan, hangat, dan menenangkan.
-- Jika user menyapa (halo, hai, dsb), sambut hangat lalu arahkan ke topik kehamilan.
-- Jika user menyebut minggu kehamilan tertentu, jelaskan perkembangan janin dan kondisi ibu pada minggu tersebut.
-- Hindari penggunaan tanda ** atau -- dalam jawaban.
-Contoh Pertanyaan:
-- "Apa yang terjadi pada janin di minggu ke-12?"
-- "Berapa ukuran bayi di minggu ke-20?"
-- "Apa saja gejala umum di trimester pertama?"
-- "Bagaimana cara menjaga kesehatan selama kehamilan?"
-- "Apa saja perubahan tubuh yang terjadi pada ibu hamil di minggu ke-30?"
+Aturan Penting:
+- Jangan gunakan tanda ** (bold markdown) karena kadang tidak rapi di beberapa perangkat, gunakan plain text atau emoji saja.
+- Jika ditanya soal medis serius (pendarahan, nyeri hebat), sarankan segera ke dokter.
+- Jika user menyapa, balas dengan ramah sebagai PregnaBot.
 
-Pesan pengguna:
+Pertanyaan User:
 "{user_message}"
+
+Jawab sebagai PregnaBot:
 """
         response = model.generate_content(
             prompt,
             request_options={"timeout": 30}
         )
         text = response.text.strip()
-        words = text.split()
-        if len(words) > 200:
-            text = " ".join(words[:200]) + "..."
-        # hapus tanda ** atau -- jika ada
-        text = text.replace("**", "").replace("--", "")
+        
+        # Bersihkan markdown bold jika masih ada
+        text = text.replace("**", "")
+        
         return text
     except Exception as e:
-        logging.error(f"⚠️ Error dari Gemini: {e}")
-        return "_Maaf, sistem sedang sibuk. Coba lagi nanti ya._"
+        error_msg = str(e)
+        logging.error(f"⚠️ Error dari Gemini: {error_msg}")
+        
+        # Cek apakah error karena limit kuota (429)
+        if "429" in error_msg or "Resource has been exhausted" in error_msg:
+            return "Maaf Bunda, kuota harian PregnaBot sudah habis. Silakan tanya lagi besok ya! 💖"
+        
+        return "Maaf Bunda, PregnaBot sedang pusing sedikit. Bisa ulangi pertanyaannya? 🤕"
 
-# ------------------------------------------------------------
-# 📤 KIRIM PESAN KE FONNTE
-# ------------------------------------------------------------
+
 def send_message_to_fonnte(phone: str, message: str):
     url = "https://api.fonnte.com/send"
     headers = {"Authorization": FONNTE_TOKEN}
@@ -93,19 +113,17 @@ def send_message_to_fonnte(phone: str, message: str):
     try:
         resp = requests.post(url, headers=headers, data=data, timeout=10)
         resp.raise_for_status()
-        logging.info(f"✅ Balasan terkirim ke {phone}: {message[:60]}...")
+        logging.info(f"✅ Balasan terkirim ke {phone}")
         return resp.json()
     except Exception as e:
         logging.error(f"❌ Gagal kirim pesan ke Fonnte: {e}")
         return {"sent": False, "error": str(e)}
 
-# ------------------------------------------------------------
-# 🌐 WEBHOOK FONNTE UNTUK TERIMA PESAN
-# ------------------------------------------------------------
+
 @app.route("/webhook", methods=["GET", "POST"])
 def webhook():
     if request.method == "GET":
-        return jsonify({"ok": True, "message": "Webhook aktif."})
+        return jsonify({"ok": True, "message": "PregnaBot Webhook Aktif 🤰"})
 
     try:
         payload = request.get_json(force=True)
@@ -115,45 +133,61 @@ def webhook():
         message = payload.get("message") or payload.get("text")
         is_group = payload.get("isgroup", False)
         group_id = payload.get("sender") if is_group else None
-
+        
         if not sender or not message:
             return jsonify({"ok": False, "error": "Payload tidak valid"}), 400
 
+        message_original = message.strip()
         message_lower = message.lower().strip()
-        sapaan = ["halo", "hai", "hallo", "pagi", "siang", "malam", "hey", "hei"]
+        
+        # Tentukan target balasan
+        target = group_id if is_group else sender
+        ai_reply = ""
 
-        # 🔹 Trigger mention @aiPregnaBot untuk group
-        trigger = "@aiPregnaBot"
-        if trigger in message_lower:
-            user_message = message_lower.replace(trigger, "").strip()
-            ai_reply = get_ai_response(user_message)
-            target = group_id if is_group else sender
-            send_result = send_message_to_fonnte(target, ai_reply)
+        # 1. Fitur Cek HPL (!hpl DD-MM-YYYY)
+        if message_lower.startswith("!hpl"):
+            parts = message_original.split()
+            if len(parts) > 1:
+                date_str = parts[1]
+                ai_reply = calculate_hpl(date_str)
+            else:
+                ai_reply = "Untuk cek HPL, ketik: !hpl TANGGAL-HPHT\nContoh: !hpl 25-12-2023"
 
-        elif any(word in message_lower for word in sapaan):
+        # 2. Fitur Menu / Bantuan
+        elif message_lower in ["!menu", "!help", "menu", "help", "bantuan"]:
             ai_reply = (
-                "👋 Hai! Saya PregnaBot, asisten ibu hamil.\n\n"
-                "Saya siap bantu kamu memahami seputar program kehamilan dan perkembangan janin.\n"
-                "Silakan tanya apa yang ingin kamu ketahui 😊"
+                "🌸 **Menu PregnaBot** 🌸\n\n"
+                "🤰 **Tanya Jawab**: Ketik pertanyaan apa saja seputar kehamilan.\n"
+                "📅 **Cek HPL**: Ketik `!hpl DD-MM-YYYY` (contoh: `!hpl 01-01-2024`)\n"
+                "✨ **Tips**: Tanyakan 'Tips minggu ini' untuk info sesuai usia kehamilan.\n\n"
+                "Semoga sehat selalu Bunda! 💖"
             )
-            target = group_id if is_group else sender
-            send_result = send_message_to_fonnte(target, ai_reply)
 
+        # 3. Chatbot AI (PregnaBot)
         else:
-            ai_reply = get_ai_response(message)
-            target = group_id if is_group else sender
-            send_result = send_message_to_fonnte(target, ai_reply)
+            # Logic untuk grup: hanya balas jika di-mention
+            if is_group:
+                trigger = "@aiPregnaBot" # Sesuaikan jika perlu
+                if trigger in message_original:
+                    clean_msg = message_original.replace(trigger, "").strip()
+                    ai_reply = get_ai_response(clean_msg)
+            else:
+                # Personal chat: balas semua
+                ai_reply = get_ai_response(message_original)
 
-        return jsonify({"ok": True, "sent": send_result}), 200
+        # Kirim balasan jika ada
+        if ai_reply:
+            send_result = send_message_to_fonnte(target, ai_reply)
+            return jsonify({"ok": True, "sent": send_result}), 200
+        else:
+            return jsonify({"ok": True, "ignored": True}), 200
 
     except Exception as e:
         logging.error(f"💥 Error di webhook: {e}")
         return jsonify({"ok": False, "error": str(e)}), 500
 
-# ------------------------------------------------------------
-# 🚀 JALANKAN SERVER
-# ------------------------------------------------------------
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
-    logging.info(f"WhatsApp PregnaBot aktif di port {port}")
+    print(f"🤰 PregnaBot siap melayani di port {port}...")
     app.run(host="0.0.0.0", port=port)

@@ -3,7 +3,7 @@
 Chatbot WhatsApp dua arah untuk edukasi kesehatan (gaya hidup sehat, nutrisi, kebersihan, stunting, dan gizi anak). Alur: pengguna mengirim pesan → Fonnte API meneruskan via webhook → Flask memproses pesan menggunakan Google Gemini 2.5 Flash → balasan dikirim kembali ke pengguna lewat Fonnte.
 
 ## Arsitektur Singkat
-- Webhook Flask: endpoint `POST /webhook` menerima JSON `{ "sender": "628xxxx", "message": "..." }` dari Fonnte.
+- Webhook Flask: endpoint `POST /webhook` menerima JSON `{ "sender": "6281933976553", "message": "..." }` dari Fonnte.
 - AI: Google Gemini 2.5 Flash via library `google-generativeai`.
 - Kirim balasan: Fonnte API endpoint `https://api.fonnte.com/send`.
 - Logging: semua percakapan dicatat ke file `chatbot.log`.

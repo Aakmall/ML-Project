@@ -12,7 +12,7 @@ pipeline {
     APP_NAME = 'whatsapp-health-bot'
     APP_PORT = '8000'
     FONNTE_SEND_URL = 'https://api.fonnte.com/send'
-    FONNTE_TEST_TARGET = '6281933976553' // Nomor WA untuk notifikasi dan tes webhook
+    FONNTE_TEST_TARGET = '62881011994106' // Nomor WA untuk notifikasi dan tes webhook
   }
 
   stages {
