@@ -133,10 +133,10 @@ def webhook():
         payload = request.get_json(force=True)
         logging.info(f"📩 Pesan masuk: {payload}")
 
-        sender = payload.get("sender") or payload.get("from") or payload.get("number")
+        # Ambil pengirim (abaikan logika group)
+        # Prioritas: 'sender' dari payload Fonnte biasanya adalah nomor pengirim
+        sender = payload.get("sender") or payload.get("from")
         message = payload.get("message") or payload.get("text")
-        is_group = payload.get("isgroup", False)
-        group_id = payload.get("sender") if is_group else None
         
         if not sender or not message:
             return jsonify({"ok": False, "error": "Payload tidak valid"}), 400
@@ -144,8 +144,9 @@ def webhook():
         message_original = message.strip()
         message_lower = message.lower().strip()
         
-        # Tentukan target balasan
-        target = group_id if is_group else sender
+        # Kita set target balasan ke TARGET_NUMBER (nomor Anda) 
+        # sesuai permintaan sebelumnya, terlepas dari siapa pengirim aslinya.
+        target = TARGET_NUMBER 
         ai_reply = ""
 
         # 1. Fitur Cek HPL (!hpl DD-MM-YYYY)
@@ -169,18 +170,12 @@ def webhook():
 
         # 3. Chatbot AI (PregnaBot)
         else:
-            # Logic untuk grup: hanya balas jika di-mention
-            if is_group:
-                trigger = "@aiPregnaBot" # Sesuaikan jika perlu
-                if trigger in message_original:
-                    clean_msg = message_original.replace(trigger, "").strip()
-                    ai_reply = get_ai_response(clean_msg)
-            else:
-                # Personal chat: balas semua
-                ai_reply = get_ai_response(message_original)
+            # Langsung balas semua pesan masuk (tanpa filter group)
+            ai_reply = get_ai_response(message_original)
 
-        # Kirim balasan jika ada
+        # Kirim balasan
         if ai_reply:
+            # Fungsi ini sudah kita hardcode untuk kirim ke TARGET_NUMBER
             send_result = send_message_to_fonnte(target, ai_reply)
             return jsonify({"ok": True, "sent": send_result}), 200
         else:
