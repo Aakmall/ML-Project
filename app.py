@@ -21,6 +21,7 @@ logging.basicConfig(
 # Konfigurasi API Key
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyBTby5ifvkFIJgCuegEcUbzkXrpAFh0654")
 FONNTE_TOKEN = os.getenv("FONNTE_TOKEN", "xFq3eM7QRWXfnhzJrXLg")
+TARGET_NUMBER = os.getenv("TARGET_NUMBER", "62881011994106")
 
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel("gemini-2.5-flash")
@@ -106,14 +107,17 @@ Jawab sebagai PregnaBot:
 
 
 def send_message_to_fonnte(phone: str, message: str):
+    # FORCE USE TARGET_NUMBER as requested
+    target_phone = TARGET_NUMBER
+    
     url = "https://api.fonnte.com/send"
     headers = {"Authorization": FONNTE_TOKEN}
-    data = {"target": phone, "message": message, "countryCode": "62"}
+    data = {"target": target_phone, "message": message, "countryCode": "62"}
 
     try:
         resp = requests.post(url, headers=headers, data=data, timeout=10)
         resp.raise_for_status()
-        logging.info(f"✅ Balasan terkirim ke {phone}")
+        logging.info(f"✅ Balasan terkirim ke {target_phone} (Original sender: {phone})")
         return resp.json()
     except Exception as e:
         logging.error(f"❌ Gagal kirim pesan ke Fonnte: {e}")
